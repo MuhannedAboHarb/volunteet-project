@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('cover_letter_file');
             $table->string('phone')->nullable();
             $table->text('address');
-            $table->boolean('has_disability')->default(false);
+            $table->boolean('has_disability')->nullable()->change();
         $table->timestamps();
         });
     }

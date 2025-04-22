@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('job_applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');  // ربط التقديم بالمتطوع
-            $table->foreignId('job_id')->constrained()->onDelete('cascade');   // ربط التقديم بالوظيفة
-            $table->text('cover_letter');  // خطاب التغطية
-            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');  // حالة الطلب
-            $table->timestamps();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->foreignId('job_id')->constrained('posts')->onDelete('cascade');
+        $table->text('cover_letter')->nullable()->change();  // جعل cover_letter يقبل القيم الفارغة
+        $table->text('cv')->nullable()->change();  // جعل cv يقبل القيم الفارغة
+        $table->text('cover_letter_text')->nullable()->change();  // جعل cover_letter_text يقبل القيم الفارغة
+        $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending'); // حالة التقديم
+        $table->timestamps();
         });
     }
 

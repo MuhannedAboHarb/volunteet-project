@@ -10,18 +10,23 @@ class JobApplication extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'job_id', 'cover_letter', 'status',
+        'user_id',
+        'job_id',
+        'cover_letter',
+        'cv',
+        'cover_letter_text',
+        'status',
     ];
 
-    // علاقة التقديم بالوظيفة
+    // علاقة مع المتطوع
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // علاقة مع الوظيفة
     public function job()
     {
         return $this->belongsTo(Post::class, 'job_id');
-    }
-
-    // علاقة التقديم بالمتطوع
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
     }
 }

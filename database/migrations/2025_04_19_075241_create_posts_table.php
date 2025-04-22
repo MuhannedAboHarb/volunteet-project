@@ -12,20 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');  // عنوان الوظيفة
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');  // ربط الوظيفة بالشركة
-            $table->text('description');  // تفاصيل الوظيفة
-            $table->decimal('salary', 8, 2);  // الراتب
-            $table->text('contract_details');  // تفاصيل العقد
-            $table->string('location');  // مكان الوظيفة
-            $table->string('slug')->unique()->after('title');
-            $table->boolean('paid')->default(true);  // هل الوظيفة مدفوعة أم لا
-            $table->timestamp('posted_at')->nullable();  // تاريخ نشر الوظيفة
-            $table->timestamp('expires_at')->nullable(); // تاريخ انتهاء الوظيفة
-            $table->timestamps();
+        $table->id();  // معرف الوظيفة (مفتاح رئيسي)
+        $table->string('title');  // عنوان الوظيفة
+        $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');  // ربط الوظيفة بالشركة
+        $table->text('description');  // تفاصيل الوظيفة
+        $table->decimal('salary', 8, 2);  // الراتب
+        $table->text('contract_details')->nullable();  // جعل هذا الحقل يقبل القيم الفارغة (nullable)
+        $table->string('location');  // مكان الوظيفة
+        $table->string('slug')->unique();  // رابط الوظيفة (slug)
+        $table->boolean('paid')->default(1);  // مدفوعة أم لا
+        $table->timestamp('posted_at')->nullable();  // تاريخ نشر الوظيفة
+        $table->timestamp('expires_at')->nullable(); // تاريخ انتهاء الوظيفة
+        $table->timestamps();  // أوقات الإنشاء والتحديث
         });
     }
+    
+
 
     /**
      * Reverse the migrations.

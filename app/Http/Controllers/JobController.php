@@ -9,16 +9,19 @@ class JobController extends Controller
 {
     // عرض جميع الوظائف (عادةً يتم عرض الوظائف المنشورة)
     public function index()
-    {
-        $posts = Post::all(); // أو يمكنك إضافة تصفية لتصفية الوظائف حسب الشركة أو المتطوع
-        return view('jobs.index', compact('posts'));
-    }
+{
+    // عرض الوظائف التي تم نشرها فقط
+    $jobs = Post::where('status', 'مفعلة')->get();
+    return view('jobs.index', compact('jobs'));
+}
+
 
     // عرض تفاصيل الوظيفة
-    public function show(Post $post)
-    {
-        return view('jobs.show', compact('post'));  // عرض تفاصيل الوظيفة
-    }
+    public function show($id)
+{
+    $job = Post::findOrFail($id);  // جلب تفاصيل الوظيفة
+    return view('jobs.show', compact('job'));
+}
 
     // عرض نموذج تقديم طلب للوظيفة
     public function apply(Post $post)

@@ -65,22 +65,11 @@ class VolunteerResource extends Resource
                     ->directory('volunteers/cvs')
                     ->acceptedFileTypes(['application/pdf', 'application/msword'])
                     ->nullable(),
-                
+
                 FileUpload::make('cover_letter_file') 
                     ->label('Upload Cover Letter')
                     ->acceptedFileTypes(['application/pdf', 'application/msword'])
                     ->nullable(),
-
-                Checkbox::make('has_previous_jobs')
-                    ->label('Has Previous Jobs?')
-                    ->default(false)
-                    ->reactive()
-                    ->afterStateUpdated(fn ($state, callable $set) => $state ? $set('previous_jobs_details', '') : null),
-
-                Textarea::make('previous_jobs_details')
-                    ->label('Previous Jobs Details')
-                    ->nullable()
-                    ->hidden(fn (callable $get) => !$get('has_previous_jobs')),
 
                 TextInput::make('phone')
                     ->label('Primary Phone Number')
@@ -93,16 +82,19 @@ class VolunteerResource extends Resource
                     ->required()
                     ->maxLength(255),
 
-                Checkbox::make('has_disability_or_chronic_illness')
+                    Checkbox::make('has_disability')
                     ->label('Has Disability or Chronic Illness')
+                    ->nullable()  // Allow null value
                     ->default(false)
                     ->reactive()
-                    ->afterStateUpdated(fn ($state, callable $set) => $state ? $set('disability_or_illness_details', '') : null),
-
-                Textarea::make('disability_or_illness_details')
-                    ->label('Disability or Illness Details')
+                    ->afterStateUpdated(fn ($state, callable $set) => $state ? $set('has_disability', '') : $set('has_disability', null)),
+                
+                Textarea::make('chronic_illness')
+                    ->label('Chronic Illness')
                     ->nullable()
-                    ->hidden(fn (callable $get) => !$get('has_disability_or_chronic_illness')),
+                    ->hidden(fn (callable $get) => !$get('has_disability'))
+                    ->reactive()
+                
             ]);
     }
 
@@ -118,8 +110,8 @@ class VolunteerResource extends Resource
                 Tables\Columns\TextColumn::make('skills')->label('Skills')->sortable(),
                 Tables\Columns\TextColumn::make('address')->label('Address')->sortable(),
                 Tables\Columns\TextColumn::make('phone')->label('Phone')->sortable(),
-                Tables\Columns\IconColumn::make('has_previous_jobs')
-                    ->label('Has Previous Jobs?')
+                Tables\Columns\IconColumn::make('has_disability')
+                    ->label('Has Disability or Chronic Illness')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('cv_file')
                     ->label('CV File')
@@ -132,7 +124,7 @@ class VolunteerResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()->label('تعديل'),
                 Tables\Actions\ViewAction::make()->label('عرض'),
-                Tables\Actions\DeleteAction::make()->label('حذق'),
+                Tables\Actions\DeleteAction::make()->label('حذف'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

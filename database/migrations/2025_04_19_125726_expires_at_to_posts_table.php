@@ -10,11 +10,14 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->timestamp('expires_at')->nullable(); // تاريخ انتهاء الوظيفة
-        });
-    }
+{
+    Schema::table('posts', function (Blueprint $table) {
+        if (!Schema::hasColumn('posts', 'expires_at')) {
+            $table->timestamp('expires_at')->nullable()->after('posted_at');  // إضافة العمود فقط إذا لم يكن موجودًا
+        }
+    });
+}
+
 
     /**
      * Reverse the migrations.

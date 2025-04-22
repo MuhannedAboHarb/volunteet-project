@@ -5,11 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostResource\Pages;
 use App\Models\Post;
 use Filament\Forms;
+use Filament\Forms\Components\Builder;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class PostResource extends Resource
 {
@@ -88,15 +90,6 @@ class PostResource extends Resource
                             ->helperText('يتم تحديده تلقائياً بناءً على حقل الموقع'),
                     ])
                     ->columns(2),
-
-                Forms\Components\Section::make('تفاصيل العقد')
-                    ->schema([
-                        Forms\Components\Textarea::make('contract_details')
-                            ->label('الشروط')
-                            ->nullable()
-                            ->columnSpanFull()
-                            ->rows(3),
-                    ]),
 
                 Forms\Components\Section::make('إعدادات النشر')
                     ->schema([
@@ -183,49 +176,18 @@ class PostResource extends Resource
                 Tables\Filters\SelectFilter::make('company')
                     ->relationship('company', 'name')
                     ->label('الشركة'),
-
-                Tables\Filters\Filter::make('paid')
-                    ->label('الوظائف المدفوعة')
-                    ->query(fn ($query) => $query->where('paid', true)),
-
-                Tables\Filters\Filter::make('remote_work')
-                    ->label('عمل عن بعد')
-                    ->query(fn ($query) => $query->where('location', 'like', '%remote%')
-                        ->orWhere('location', 'like', '%عن بعد%')),
-
-                Tables\Filters\SelectFilter::make('contract_type')
-                    ->label('نوع العقد')
-                    ->options([
-                        'دوام كامل' => 'دوام كامل',
-                        'دوام جزئي' => 'دوام جزئي',
-                    ])
-                    ->query(fn ($query, $data) => $query->when(
-                        $data['value'],
-                        fn ($query, $value) => $query->where('salary', $value === 'دوام كامل' ? '>' : '<=', 5000)
-                    )),
-
-                Tables\Filters\Filter::make('expired')
-                    ->label('الوظائف المنتهية')
-                    ->query(fn ($query) => $query->where('expires_at', '<', now())),
+                // المزيد من الفلاتر حسب الحاجة
             ])
             ->actions([
                 Tables\Actions\EditAction::make()->label('تعديل'),
                 Tables\Actions\ViewAction::make()->label('عرض'),
-                Tables\Actions\DeleteAction::make()->label('حذق'),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->label('حذف المحدد'),
-                ]),
-            ])
-            ->defaultSort('posted_at', 'desc')
-            ->emptyStateHeading('لا توجد وظائف بعد')
-            ->emptyStateDescription('انقر على "إضافة" لإنشاء وظيفة جديدة');
+                Tables\Actions\DeleteAction::make()->label('حذف'),
+            ]);
     }
 
-    public static function getRelations(): array
+    public static function getTableQuery(): EloquentBuilder
     {
-        return [];
+        return parent::getTableQuery()->where('status', 'مفعلة'); // تصفية الوظائف المفعلة فقط
     }
 
     public static function getPages(): array
@@ -237,3 +199,4 @@ class PostResource extends Resource
         ];
     }
 }
+

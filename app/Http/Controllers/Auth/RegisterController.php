@@ -45,6 +45,7 @@ class RegisterController extends Controller
         auth()->login($user);
 
         // إعادة التوجيه بعد التسجيل الناجح
-        return redirect()->route('/'); // هنا يتم توجيه المستخدم إلى لوحة التحكم الخاصة به (أو صفحة أخرى)
+        return redirect()->route('filament.pages.dashboard');
+        // هنا يتم توجيه المستخدم إلى لوحة التحكم الخاصة به (أو صفحة أخرى)
     }
 }

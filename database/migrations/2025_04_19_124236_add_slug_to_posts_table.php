@@ -10,11 +10,14 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::table('posts', function (Blueprint $table) {
+{
+    Schema::table('posts', function (Blueprint $table) {
+        if (!Schema::hasColumn('posts', 'slug')) {
             $table->string('slug')->unique()->after('title');
-        });
-    }
+        }
+    });
+}
+
 
     /**
      * Reverse the migrations.

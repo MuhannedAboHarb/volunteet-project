@@ -6,13 +6,14 @@ use App\Filament\Resources\JobApplicationResource\Pages;
 use App\Models\JobApplication;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Forms;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-
 
 class JobApplicationResource extends Resource
 {
@@ -31,11 +32,19 @@ class JobApplicationResource extends Resource
 
                 Select::make('job_id')
                     ->label('Job')
-                    ->options(Post::all()->pluck('title', 'id'))
+                    ->options(Post::where('status', 'مفعلة')->pluck('title', 'id')) // عرض الوظائف المفعلة فقط
                     ->required(),
 
-                Textarea::make('cover_letter')
+                FileUpload::make('cover_letter')
                     ->label('Cover Letter')
+                    ->required(),
+
+                FileUpload::make('cv')
+                    ->label('CV')
+                    ->required(),
+
+                Textarea::make('cover_letter_text')
+                    ->label('Cover Letter Text')
                     ->required(),
 
                 Select::make('status')
@@ -55,9 +64,20 @@ class JobApplicationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')->label('Applicant')->sortable(),
-                Tables\Columns\TextColumn::make('job.title')->label('Job Title')->sortable(),
+                Tables\Columns\TextColumn::make('job.title')->label('Job Title')->sortable(), // عرض عنوان الوظيفة
                 Tables\Columns\TextColumn::make('cover_letter')->label('Cover Letter')->sortable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')->sortable(),
+            ])
+            ->actions([
+                // زر "Apply" للتقديم على الوظيفة
+                Tables\Actions\Action::make('Apply')
+                    ->label('تقديم على الوظيفة')
+                    ->action(fn ($record) => JobApplication::create([
+                        'user_id' => auth()->id(),
+                        'job_id' => $record->job_id,
+                        'status' => 'pending', // الحالة تكون مبدئية
+                    ]))
+                    ->color('success'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -68,11 +88,7 @@ class JobApplicationResource extends Resource
                     ])
                     ->label('Filter by Status'),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
-            ->bulkActions([
+            ->bulkActions([ // يمكن إضافة إجراءات جماعية هنا حسب الحاجة
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
@@ -81,9 +97,7 @@ class JobApplicationResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
