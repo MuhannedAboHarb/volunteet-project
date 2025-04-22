@@ -21,10 +21,6 @@ Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-// بعد التسجيل، توجيه المتطوع إلى لوحة التحكم الخاصة بـ Filament
-Route::get('/admin', function () {
-    return redirect()->route('filament.dashboard');  // إعادة التوجيه إلى لوحة تحكم Filament
-})->middleware('auth'); // تأكد من أن المتطوع مسجل دخوله
 
 // إدارة المتطوعين والشركات
 Route::resource('volunteers', VolunteerController::class);
